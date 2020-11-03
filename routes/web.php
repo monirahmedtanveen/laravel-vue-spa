@@ -13,6 +13,8 @@ use Illuminate\Support\Facades\Route;
 |
 */
 
-Route::get('/', function () {
+Route::get('/', 'TestController@index');
+
+Route::any('{slug}', function($id) {
     return view('welcome');
 });
