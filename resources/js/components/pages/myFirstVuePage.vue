@@ -1,5 +1,5 @@
 <template>
-    <div>
-        <h1>This is our first vue page..</h1>
-    </div>
+  <div>
+    <h1>MY FIRST VUE PAGE</h1>
+  </div>
 </template>

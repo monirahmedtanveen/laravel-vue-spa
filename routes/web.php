@@ -12,8 +12,10 @@ use Illuminate\Support\Facades\Route;
 | contains the "web" middleware group. Now create something great!
 |
 */
+Route::any('/', function() {
+    return view('welcome');
+});
 
-Route::get('/', 'TestController@index');
 
 Route::any('{slug}', function($id) {
     return view('welcome');
