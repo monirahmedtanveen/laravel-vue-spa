@@ -17,6 +17,11 @@ Route::any('/', function() {
 });
 
 
-Route::any('{slug}', function($id) {
+Route::any('{slug}', function() {
     return view('welcome');
 });
+
+Route::post('app/create_tag', 'AdminController@addTag');
+Route::get('app/get_tags', 'AdminController@getTags');
+
+

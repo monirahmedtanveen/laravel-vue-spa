@@ -18,6 +18,12 @@ class TestController extends Controller
         ]);
     }
 
+    public function test(){
+        return response()->json([
+            'msg' => 'something went wrong'
+        ], 422);
+    }
+
     /**
      * Store a newly created resource in storage.
      *
