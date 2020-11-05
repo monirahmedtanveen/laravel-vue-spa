@@ -15,6 +15,7 @@ use Illuminate\Support\Facades\Route;
 Route::get('app/get_tags', 'AdminController@getTags');
 Route::post('app/create_tag', 'AdminController@addTag');
 Route::post('app/edit_tag', 'AdminController@editTag');
+Route::post('app/delete_tag', 'AdminController@deleteTag');
 
 Route::any('/', function() {
     return view('welcome');

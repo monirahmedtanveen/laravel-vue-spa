@@ -9,10 +9,11 @@ import methods from './components/pages/basic/methods.vue'
 
 // Project Pages
 import home from './components/pages/home'
-import tags from './components/pages/tags'
+import tags from './admin/pages/tags'
+import category from './admin/pages/category'
 
 const routes = [
-    // projects routes...
+    // admin projects routes...
     {
         path: '/',
         component: home
@@ -20,6 +21,10 @@ const routes = [
     {
         path: '/tags',
         component: tags
+    },
+    {
+        path: '/categories',
+        component: category
     },
 
 
