@@ -7,9 +7,9 @@
           class="_1adminOverveiw_table_recent _box_shadow _border_radious _mar_b30 _p20"
         >
           <p class="_title0">
-            Tags
+            Category
             <Button @click="addModal = true"
-              ><Icon type="md-add" /> Add Tag</Button
+              ><Icon type="md-add" /> Add Category</Button
             >
           </p>
 
@@ -18,29 +18,33 @@
               <!-- TABLE TITLE -->
               <tr>
                 <th>ID</th>
-                <th>Tag name</th>
+                <th>Icon image</th>
+                <th>Category name</th>
                 <th>Created at</th>
                 <th>Action</th>
               </tr>
               <!-- TABLE TITLE -->
 
               <!-- ITEMS -->
-              <tr v-for="(tag, i) in tags" :key="i" v-if="tags.length">
-                <td>{{ tag.id }}</td>
-                <td class="_table_name">{{ tag.tagName }}</td>
-                <td>{{ tag.created_at }}</td>
+              <tr v-for="(category, i) in categories" :key="i" v-if="categories.length">
+                <td>{{ category.id }}</td>
+                <td class="table_image">
+                  <img :src="category.iconImage" />
+                </td>
+                <td class="_table_name">{{ category.categoryName }}</td>
+                <td>{{ category.created_at }}</td>
                 <td>
                   <Button
                     type="info"
                     size="small"
-                    @click="showEditModal(tag, i)"
+                    @click="showEditModal(category, i)"
                     >Edit</Button
                   >
                   <Button
                     type="error"
                     size="small"
-                    @click="showDeletingModal(tag, i)"
-                    :loading="tag.isDeleting"
+                    @click="showDeletingModal(category, i)"
+                    :loading="category.isDeleting"
                     >Delete</Button
                   >
                 </td>
@@ -57,15 +61,25 @@
           :mask-closable="false"
           :closable="false"
         >
-          <Input v-model="data.tagName" placeholder="Enter something..." />
+          <Input v-model="data.categoryName" placeholder="Enter something..." />
 
           <div class="space"></div>
           <div class="space"></div>
 
           <Upload
+            ref="uploads"
             type="drag"
-            :headers="{'x-csrf-token': token}"
+            :headers="{
+              'x-csrf-token': token,
+              'X-Requested-With': 'XMLHttpRequest',
+            }"
             action="/app/upload"
+            :on-success="handleSuccess"
+            :on-error="handleError"
+            :format="['jpg', 'jpeg', 'png']"
+            :max-size="2048"
+            :on-format-error="handleFormatError"
+            :on-exceeded-size="handleMaxSize"
           >
             <div style="padding: 20px 0">
               <Icon
@@ -77,14 +91,21 @@
             </div>
           </Upload>
 
+          <div class="demo-upload-list" v-if="data.iconImage">
+            <img :src="`/uploads/${data.iconImage}`" />
+              <div class="demo-upload-list-cover">
+                <Icon type="ios-trash-outline" @click="deleteImage"></Icon>
+              </div>
+          </div>
+
           <div slot="footer">
             <Button type="default" @click="addModal = false">Close</Button>
             <Button
               type="primary"
-              @click="addTag"
+              @click="addCategory"
               :disabled="isAdding"
               :loading="isAdding"
-              >{{ isAdding ? "Adding.." : "Add tag" }}</Button
+              >{{ isAdding ? "Adding.." : "Add category" }}</Button
             >
           </div>
         </Modal>
@@ -141,13 +162,14 @@ export default {
   data() {
     return {
       data: {
-        tagName: "",
+        iconImage: "",
+        categoryName: "",
       },
       addModal: false,
       isAdding: false,
-      tags: [],
+      categories: [],
       editData: {
-        tagName: "",
+        categoryName: "",
       },
       editModal: false,
       index: -1,
@@ -155,24 +177,32 @@ export default {
       isDeleting: false,
       deleteItem: {},
       deletingIndex: -1,
-      token: '',
+      token: "",
     };
   },
 
   methods: {
-    async addTag() {
-      if (this.data.tagName.trim() == "")
-        return this.e("Tag name is required.");
-      const res = await this.callApi("post", "/app/create_tag", this.data);
+    async addCategory() {
+      if (this.data.categoryName.trim() == "")
+        return this.e("Category name is required.");
+      if (this.data.iconImage.trim() == "")
+        return this.e("Icon image is required.");
+
+      this.data.iconImage = `/uploads/${this.data.iconImage}`
+      const res = await this.callApi("post", "/app/create_category", this.data);
       if (res.status === 201) {
-        this.tags.unshift(res.data);
-        this.s("Tag has been added successfully!");
+        this.categories.unshift(res.data);
+        this.s("Category has been added successfully!");
         this.addModal = false;
-        this.data.tagName = "";
+        this.data.categoryName = "";
+        this.data.iconImage = "";
       } else {
         if (res.status === 422) {
-          if (res.data.errors.tagName) {
-            this.e(res.data.errors.tagName[0]);
+          if (res.data.errors.categoryName) {
+            this.e(res.data.errors.categoryName[0]);
+          }
+          if (res.data.errors.iconImage) {
+            this.e(res.data.errors.iconImage[0]);
           }
         } else {
           this.swr();
@@ -233,14 +263,49 @@ export default {
       this.editModal = true;
       this.index = index;
     },
+    handleSuccess(res, file) {
+      this.data.iconImage = res;
+    },
+    handleError(res, file) {
+      this.$Notice.warning({
+        title: "The file format is incorrect",
+        desc: `${
+          file.errors.file.length ? file.errors.file[0] : "Something went wrong"
+        }`,
+      });
+    },
+    handleFormatError(file) {
+      this.$Notice.warning({
+        title: "The file format is incorrect",
+        desc:
+          "File format of " +
+          file.name +
+          " is incorrect, please select jpg or png.",
+      });
+    },
+    handleMaxSize(file) {
+      this.$Notice.warning({
+        title: "Exceeding file size limit",
+        desc: "File  " + file.name + " is too large, no more than 2M.",
+      });
+    },
+    async deleteImage(){
+      let image = this.data.iconImage
+      this.$refs.uploads.clearFiles()
+      this.data.iconImage = ''
+      const res = await this.callApi('post', '/app/delete_image', {imageName: image})
+      if (res.status != 200) {
+        this.data.iconImage = image
+        this.swr()
+      }
+    }
   },
 
   async created() {
-    this.token = window.Laravel.csrfToken
-    const res = await this.callApi("get", "/app/get_tags");
+    this.token = window.Laravel.csrfToken;
+    const res = await this.callApi("get", "/app/get_categories");
     if (res.status === 200) {
-      this.tags = res.data;
-      console.log(this.tags);
+      this.categories = res.data;
     } else {
       this.swr();
     }

@@ -2066,17 +2066,39 @@ function _asyncToGenerator(fn) { return function () { var self = this, args = ar
 //
 //
 //
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
 /* harmony default export */ __webpack_exports__["default"] = ({
   data: function data() {
     return {
       data: {
-        tagName: ""
+        iconImage: "",
+        categoryName: ""
       },
       addModal: false,
       isAdding: false,
-      tags: [],
+      categories: [],
       editData: {
-        tagName: ""
+        categoryName: ""
       },
       editModal: false,
       index: -1,
@@ -2084,11 +2106,11 @@ function _asyncToGenerator(fn) { return function () { var self = this, args = ar
       isDeleting: false,
       deleteItem: {},
       deletingIndex: -1,
-      token: ''
+      token: ""
     };
   },
   methods: {
-    addTag: function addTag() {
+    addCategory: function addCategory() {
       var _this = this;
 
       return _asyncToGenerator( /*#__PURE__*/_babel_runtime_regenerator__WEBPACK_IMPORTED_MODULE_0___default.a.mark(function _callee() {
@@ -2097,38 +2119,52 @@ function _asyncToGenerator(fn) { return function () { var self = this, args = ar
           while (1) {
             switch (_context.prev = _context.next) {
               case 0:
-                if (!(_this.data.tagName.trim() == "")) {
+                if (!(_this.data.categoryName.trim() == "")) {
                   _context.next = 2;
                   break;
                 }
 
-                return _context.abrupt("return", _this.e("Tag name is required."));
+                return _context.abrupt("return", _this.e("Category name is required."));
 
               case 2:
-                _context.next = 4;
-                return _this.callApi("post", "/app/create_tag", _this.data);
+                if (!(_this.data.iconImage.trim() == "")) {
+                  _context.next = 4;
+                  break;
+                }
+
+                return _context.abrupt("return", _this.e("Icon image is required."));
 
               case 4:
+                _this.data.iconImage = "/uploads/".concat(_this.data.iconImage);
+                _context.next = 7;
+                return _this.callApi("post", "/app/create_category", _this.data);
+
+              case 7:
                 res = _context.sent;
 
                 if (res.status === 201) {
-                  _this.tags.unshift(res.data);
+                  _this.categories.unshift(res.data);
 
-                  _this.s("Tag has been added successfully!");
+                  _this.s("Category has been added successfully!");
 
                   _this.addModal = false;
-                  _this.data.tagName = "";
+                  _this.data.categoryName = "";
+                  _this.data.iconImage = "";
                 } else {
                   if (res.status === 422) {
-                    if (res.data.errors.tagName) {
-                      _this.e(res.data.errors.tagName[0]);
+                    if (res.data.errors.categoryName) {
+                      _this.e(res.data.errors.categoryName[0]);
+                    }
+
+                    if (res.data.errors.iconImage) {
+                      _this.e(res.data.errors.iconImage[0]);
                     }
                   } else {
                     _this.swr();
                   }
                 }
 
-              case 6:
+              case 9:
               case "end":
                 return _context.stop();
             }
@@ -2233,37 +2269,93 @@ function _asyncToGenerator(fn) { return function () { var self = this, args = ar
       this.editData = obj;
       this.editModal = true;
       this.index = index;
+    },
+    handleSuccess: function handleSuccess(res, file) {
+      this.data.iconImage = res;
+    },
+    handleError: function handleError(res, file) {
+      this.$Notice.warning({
+        title: "The file format is incorrect",
+        desc: "".concat(file.errors.file.length ? file.errors.file[0] : "Something went wrong")
+      });
+    },
+    handleFormatError: function handleFormatError(file) {
+      this.$Notice.warning({
+        title: "The file format is incorrect",
+        desc: "File format of " + file.name + " is incorrect, please select jpg or png."
+      });
+    },
+    handleMaxSize: function handleMaxSize(file) {
+      this.$Notice.warning({
+        title: "Exceeding file size limit",
+        desc: "File  " + file.name + " is too large, no more than 2M."
+      });
+    },
+    deleteImage: function deleteImage() {
+      var _this4 = this;
+
+      return _asyncToGenerator( /*#__PURE__*/_babel_runtime_regenerator__WEBPACK_IMPORTED_MODULE_0___default.a.mark(function _callee4() {
+        var image, res;
+        return _babel_runtime_regenerator__WEBPACK_IMPORTED_MODULE_0___default.a.wrap(function _callee4$(_context4) {
+          while (1) {
+            switch (_context4.prev = _context4.next) {
+              case 0:
+                image = _this4.data.iconImage;
+
+                _this4.$refs.uploads.clearFiles();
+
+                _this4.data.iconImage = '';
+                _context4.next = 5;
+                return _this4.callApi('post', '/app/delete_image', {
+                  imageName: image
+                });
+
+              case 5:
+                res = _context4.sent;
+
+                if (res.status != 200) {
+                  _this4.data.iconImage = image;
+
+                  _this4.swr();
+                }
+
+              case 7:
+              case "end":
+                return _context4.stop();
+            }
+          }
+        }, _callee4);
+      }))();
     }
   },
   created: function created() {
-    var _this4 = this;
+    var _this5 = this;
 
-    return _asyncToGenerator( /*#__PURE__*/_babel_runtime_regenerator__WEBPACK_IMPORTED_MODULE_0___default.a.mark(function _callee4() {
+    return _asyncToGenerator( /*#__PURE__*/_babel_runtime_regenerator__WEBPACK_IMPORTED_MODULE_0___default.a.mark(function _callee5() {
       var res;
-      return _babel_runtime_regenerator__WEBPACK_IMPORTED_MODULE_0___default.a.wrap(function _callee4$(_context4) {
+      return _babel_runtime_regenerator__WEBPACK_IMPORTED_MODULE_0___default.a.wrap(function _callee5$(_context5) {
         while (1) {
-          switch (_context4.prev = _context4.next) {
+          switch (_context5.prev = _context5.next) {
             case 0:
-              _this4.token = window.Laravel.csrfToken;
-              _context4.next = 3;
-              return _this4.callApi("get", "/app/get_tags");
+              _this5.token = window.Laravel.csrfToken;
+              _context5.next = 3;
+              return _this5.callApi("get", "/app/get_categories");
 
             case 3:
-              res = _context4.sent;
+              res = _context5.sent;
 
               if (res.status === 200) {
-                _this4.tags = res.data;
-                console.log(_this4.tags);
+                _this5.categories = res.data;
               } else {
-                _this4.swr();
+                _this5.swr();
               }
 
             case 5:
             case "end":
-              return _context4.stop();
+              return _context5.stop();
           }
         }
-      }, _callee4);
+      }, _callee5);
     }))();
   }
 });
@@ -67560,7 +67652,7 @@ var render = function() {
                 "p",
                 { staticClass: "_title0" },
                 [
-                  _vm._v("\n          Tags\n          "),
+                  _vm._v("\n          Category\n          "),
                   _c(
                     "Button",
                     {
@@ -67572,7 +67664,7 @@ var render = function() {
                     },
                     [
                       _c("Icon", { attrs: { type: "md-add" } }),
-                      _vm._v(" Add Tag")
+                      _vm._v(" Add Category")
                     ],
                     1
                   )
@@ -67587,16 +67679,20 @@ var render = function() {
                   [
                     _vm._m(0),
                     _vm._v(" "),
-                    _vm._l(_vm.tags, function(tag, i) {
-                      return _vm.tags.length
+                    _vm._l(_vm.categories, function(category, i) {
+                      return _vm.categories.length
                         ? _c("tr", { key: i }, [
-                            _c("td", [_vm._v(_vm._s(tag.id))]),
+                            _c("td", [_vm._v(_vm._s(category.id))]),
                             _vm._v(" "),
-                            _c("td", { staticClass: "_table_name" }, [
-                              _vm._v(_vm._s(tag.tagName))
+                            _c("td", { staticClass: "table_image" }, [
+                              _c("img", { attrs: { src: category.iconImage } })
                             ]),
                             _vm._v(" "),
-                            _c("td", [_vm._v(_vm._s(tag.created_at))]),
+                            _c("td", { staticClass: "_table_name" }, [
+                              _vm._v(_vm._s(category.categoryName))
+                            ]),
+                            _vm._v(" "),
+                            _c("td", [_vm._v(_vm._s(category.created_at))]),
                             _vm._v(" "),
                             _c(
                               "td",
@@ -67607,7 +67703,7 @@ var render = function() {
                                     attrs: { type: "info", size: "small" },
                                     on: {
                                       click: function($event) {
-                                        return _vm.showEditModal(tag, i)
+                                        return _vm.showEditModal(category, i)
                                       }
                                     }
                                   },
@@ -67620,11 +67716,14 @@ var render = function() {
                                     attrs: {
                                       type: "error",
                                       size: "small",
-                                      loading: tag.isDeleting
+                                      loading: category.isDeleting
                                     },
                                     on: {
                                       click: function($event) {
-                                        return _vm.showDeletingModal(tag, i)
+                                        return _vm.showDeletingModal(
+                                          category,
+                                          i
+                                        )
                                       }
                                     }
                                   },
@@ -67663,11 +67762,11 @@ var render = function() {
               _c("Input", {
                 attrs: { placeholder: "Enter something..." },
                 model: {
-                  value: _vm.data.tagName,
+                  value: _vm.data.categoryName,
                   callback: function($$v) {
-                    _vm.$set(_vm.data, "tagName", $$v)
+                    _vm.$set(_vm.data, "categoryName", $$v)
                   },
-                  expression: "data.tagName"
+                  expression: "data.categoryName"
                 }
               }),
               _vm._v(" "),
@@ -67678,10 +67777,20 @@ var render = function() {
               _c(
                 "Upload",
                 {
+                  ref: "uploads",
                   attrs: {
                     type: "drag",
-                    headers: { "x-csrf-token": _vm.token },
-                    action: "/app/upload"
+                    headers: {
+                      "x-csrf-token": _vm.token,
+                      "X-Requested-With": "XMLHttpRequest"
+                    },
+                    action: "/app/upload",
+                    "on-success": _vm.handleSuccess,
+                    "on-error": _vm.handleError,
+                    format: ["jpg", "jpeg", "png"],
+                    "max-size": 2048,
+                    "on-format-error": _vm.handleFormatError,
+                    "on-exceeded-size": _vm.handleMaxSize
                   }
                 },
                 [
@@ -67700,6 +67809,26 @@ var render = function() {
                   )
                 ]
               ),
+              _vm._v(" "),
+              _vm.data.iconImage
+                ? _c("div", { staticClass: "demo-upload-list" }, [
+                    _c("img", {
+                      attrs: { src: "/uploads/" + _vm.data.iconImage }
+                    }),
+                    _vm._v(" "),
+                    _c(
+                      "div",
+                      { staticClass: "demo-upload-list-cover" },
+                      [
+                        _c("Icon", {
+                          attrs: { type: "ios-trash-outline" },
+                          on: { click: _vm.deleteImage }
+                        })
+                      ],
+                      1
+                    )
+                  ])
+                : _vm._e(),
               _vm._v(" "),
               _c(
                 "div",
@@ -67726,9 +67855,9 @@ var render = function() {
                         disabled: _vm.isAdding,
                         loading: _vm.isAdding
                       },
-                      on: { click: _vm.addTag }
+                      on: { click: _vm.addCategory }
                     },
-                    [_vm._v(_vm._s(_vm.isAdding ? "Adding.." : "Add tag"))]
+                    [_vm._v(_vm._s(_vm.isAdding ? "Adding.." : "Add category"))]
                   )
                 ],
                 1
@@ -67870,7 +67999,9 @@ var staticRenderFns = [
     return _c("tr", [
       _c("th", [_vm._v("ID")]),
       _vm._v(" "),
-      _c("th", [_vm._v("Tag name")]),
+      _c("th", [_vm._v("Icon image")]),
+      _vm._v(" "),
+      _c("th", [_vm._v("Category name")]),
       _vm._v(" "),
       _c("th", [_vm._v("Created at")]),
       _vm._v(" "),
