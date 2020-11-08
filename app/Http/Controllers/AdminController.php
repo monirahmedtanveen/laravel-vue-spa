@@ -39,4 +39,11 @@ class AdminController extends Controller
     public function getTags(){
         return Tag::orderBy('id', 'DESC')->get();
     }
+
+    public function upload(Request $request){
+        $picName = time() . '.' . $request->file->extension();
+        $request->file->move('uploads', $picName);
+
+        return $picName;
+    }
 }

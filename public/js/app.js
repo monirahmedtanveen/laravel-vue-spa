@@ -2040,6 +2040,32 @@ function _asyncToGenerator(fn) { return function () { var self = this, args = ar
 //
 //
 //
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
 /* harmony default export */ __webpack_exports__["default"] = ({
   data: function data() {
     return {
@@ -2057,7 +2083,8 @@ function _asyncToGenerator(fn) { return function () { var self = this, args = ar
       showDeleteModal: false,
       isDeleting: false,
       deleteItem: {},
-      deletingIndex: -1
+      deletingIndex: -1,
+      token: ''
     };
   },
   methods: {
@@ -2217,10 +2244,11 @@ function _asyncToGenerator(fn) { return function () { var self = this, args = ar
         while (1) {
           switch (_context4.prev = _context4.next) {
             case 0:
-              _context4.next = 2;
+              _this4.token = window.Laravel.csrfToken;
+              _context4.next = 3;
               return _this4.callApi("get", "/app/get_tags");
 
-            case 2:
+            case 3:
               res = _context4.sent;
 
               if (res.status === 200) {
@@ -2230,7 +2258,7 @@ function _asyncToGenerator(fn) { return function () { var self = this, args = ar
                 _this4.swr();
               }
 
-            case 4:
+            case 5:
             case "end":
               return _context4.stop();
           }
@@ -67619,7 +67647,7 @@ var render = function() {
             "Modal",
             {
               attrs: {
-                title: "Add tag",
+                title: "Add category",
                 "mask-closable": false,
                 closable: false
               },
@@ -67642,6 +67670,36 @@ var render = function() {
                   expression: "data.tagName"
                 }
               }),
+              _vm._v(" "),
+              _c("div", { staticClass: "space" }),
+              _vm._v(" "),
+              _c("div", { staticClass: "space" }),
+              _vm._v(" "),
+              _c(
+                "Upload",
+                {
+                  attrs: {
+                    type: "drag",
+                    headers: { "x-csrf-token": _vm.token },
+                    action: "/app/upload"
+                  }
+                },
+                [
+                  _c(
+                    "div",
+                    { staticStyle: { padding: "20px 0" } },
+                    [
+                      _c("Icon", {
+                        staticStyle: { color: "#3399ff" },
+                        attrs: { type: "ios-cloud-upload", size: "52" }
+                      }),
+                      _vm._v(" "),
+                      _c("p", [_vm._v("Click or drag files here to upload")])
+                    ],
+                    1
+                  )
+                ]
+              ),
               _vm._v(" "),
               _c(
                 "div",

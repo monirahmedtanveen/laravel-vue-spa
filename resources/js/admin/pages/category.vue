@@ -53,11 +53,29 @@
         <!-- Tag adding modal -->
         <Modal
           v-model="addModal"
-          title="Add tag"
+          title="Add category"
           :mask-closable="false"
           :closable="false"
         >
           <Input v-model="data.tagName" placeholder="Enter something..." />
+
+          <div class="space"></div>
+          <div class="space"></div>
+
+          <Upload
+            type="drag"
+            :headers="{'x-csrf-token': token}"
+            action="/app/upload"
+          >
+            <div style="padding: 20px 0">
+              <Icon
+                type="ios-cloud-upload"
+                size="52"
+                style="color: #3399ff"
+              ></Icon>
+              <p>Click or drag files here to upload</p>
+            </div>
+          </Upload>
 
           <div slot="footer">
             <Button type="default" @click="addModal = false">Close</Button>
@@ -102,7 +120,15 @@
             <p>Are you sure you want to delete tag?</p>
           </div>
           <div slot="footer">
-            <Button type="error" size="large" long :loading="isDeleting" :disabled="isDeleting" @click="deleteTag">Delete</Button>
+            <Button
+              type="error"
+              size="large"
+              long
+              :loading="isDeleting"
+              :disabled="isDeleting"
+              @click="deleteTag"
+              >Delete</Button
+            >
           </div>
         </Modal>
       </div>
@@ -129,6 +155,7 @@ export default {
       isDeleting: false,
       deleteItem: {},
       deletingIndex: -1,
+      token: '',
     };
   },
 
@@ -175,22 +202,26 @@ export default {
     async deleteTag() {
       // if (!confirm("Are you sure to delete this tag?")) return;
       // this.$set(tag, "isDeleting", true);
-      this.isDeleting = true
-      const res = await this.callApi("post", "/app/delete_tag", this.deleteItem);
+      this.isDeleting = true;
+      const res = await this.callApi(
+        "post",
+        "/app/delete_tag",
+        this.deleteItem
+      );
       if (res.status === 200) {
         this.tags.splice(this.deletingIndex, 1);
         this.s("Tag has been deleted successfully!");
       } else {
         this.swr();
       }
-      this.isDeleting = false
-      this.showDeleteModal = false
+      this.isDeleting = false;
+      this.showDeleteModal = false;
     },
 
     showDeletingModal(tag, i) {
-      this.deleteItem = tag
-      this.deletingIndex = i
-      this.showDeleteModal = true
+      this.deleteItem = tag;
+      this.deletingIndex = i;
+      this.showDeleteModal = true;
     },
 
     showEditModal(tag, index) {
@@ -205,6 +236,7 @@ export default {
   },
 
   async created() {
+    this.token = window.Laravel.csrfToken
     const res = await this.callApi("get", "/app/get_tags");
     if (res.status === 200) {
       this.tags = res.data;
