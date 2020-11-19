@@ -6,6 +6,8 @@ import newRoutePage from './components/pages/newRoutePage'
 import hooks from './components/pages/basic/hooks.vue'
 import methods from './components/pages/basic/methods.vue'
 
+// Authentication Pages
+import login from './admin/authentication/login'
 
 // Project Pages
 import home from './components/pages/home'
@@ -13,6 +15,12 @@ import tags from './admin/pages/tags'
 import category from './admin/pages/category'
 
 const routes = [
+    // authentication routes
+    {
+        path: '/login',
+        component: login
+    },
+
     // admin projects routes...
     {
         path: '/',
