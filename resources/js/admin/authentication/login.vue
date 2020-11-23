@@ -43,6 +43,8 @@
 </template>
 
 <script>
+import { mapActions } from 'vuex'
+
 export default {
   data() {
     return {
@@ -56,6 +58,10 @@ export default {
     };
   },
   methods: {
+    ...mapActions({
+      signIn: 'auth/signIn'
+    }),
+
     async generateOTP() {
       this.isLogging = true
       if (this.data.email.trim() == "") {
@@ -67,7 +73,7 @@ export default {
         return this.e("Password is required.");
       }
       
-      const res = await this.callApi("post", "http://52.76.162.43/api/login/otp-generate", this.data);
+      const res = await this.callApi("post", "login/otp-generate", this.data);
       if (res.status === 200 && res.data.code === 200) {
         this.loginPanel = false
         if (res.data.messages) {
@@ -96,9 +102,14 @@ export default {
         return this.e("OTP is required.")
       }
 
-      const res = await this.callApi("post", "http://52.76.162.43/api/login/otp-verify", this.data)
+      const res = await this.callApi("post", "login/otp-verify", this.data)
       if (res.status === 200 && res.data.code === 200) {
-        console.log(res.data)
+        /** VUEX SIGNIN FUNCTION FOR STORING TOKEN & USER */
+        this.signIn(res.data.data).then(() => {
+          this.$router.replace({
+            name: 'dashboard'
+          })
+        })
       } else {
         if (res.data.messages) {
           for (const key in res.data.messages) {
@@ -108,6 +119,7 @@ export default {
           this.swr()
         }
       }
+
       this.isLogging = false
     }
   },

@@ -1,6 +1,6 @@
 <template>
   <div>
-    <div v-if="isLoggedIn">
+    <div v-if="authenticated">
       <!--========== ADMIN SIDE MENU one ========-->
       <div class="_1side_menu">
         <div class="_1side_menu_logo">
@@ -12,20 +12,29 @@
         <div class="_1side_menu_content">
           <div class="_1side_menu_img_name">
             <!-- <img class="_1side_menu_img" src="/pic.png" alt="" title=""> -->
-            <p class="_1side_menu_name">Admin</p>
+            <p class="_1side_menu_name">{{ user.name }}</p>
           </div>
 
           <!--~~~ MENU LIST ~~~~~~-->
           <div class="_1side_menu_list">
             <ul class="_1side_menu_list_ul">
               <li>
-                <router-link to="/"><Icon type="ios-speedometer" /> Dashboard</router-link>
+                <router-link to="/"
+                  ><Icon type="ios-speedometer" /> Dashboard</router-link
+                >
               </li>
               <li>
-                <router-link to="tags"><Icon type="ios-speedometer" /> Tags</router-link>
+                <router-link to="tags"
+                  ><Icon type="ios-speedometer" /> Tags</router-link
+                >
               </li>
               <li>
-                <router-link to="categories"><Icon type="ios-speedometer" /> Category</router-link>
+                <router-link to="categories"
+                  ><Icon type="ios-speedometer" /> Category</router-link
+                >
+              </li>
+              <li>
+                <a href="#" @click.prevent="signOut"><Icon type="ios-speedometer" /> Logout</a>
               </li>
             </ul>
           </div>
@@ -41,7 +50,6 @@
               <li>
                 <Icon type="ios-list" />
               </li>
-              <!--<li><Icon type="ios-albums" /></li>-->
             </ul>
           </div>
         </div>
@@ -53,11 +61,32 @@
 </template>
 
 <script>
+import { mapGetters, mapActions } from "vuex";
+
 export default {
-  data(){
+  data() {
     return {
-      isLoggedIn: false
+      isLoggedIn: false,
+    };
+  },
+  computed: {
+    ...mapGetters({
+      authenticated: "auth/authenticated",
+      user: "auth/user",
+    }),
+  },
+  methods: {
+    ...mapActions({
+      signOutAction: "auth/signOut"
+    }),
+
+    signOut() {
+      this.signOutAction().then(() => {
+        this.$router.replace({
+          name: 'login'
+        })
+      })
     }
   }
-}
+};
 </script>

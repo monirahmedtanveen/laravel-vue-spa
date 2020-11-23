@@ -13,69 +13,59 @@ import login from './admin/authentication/login'
 import home from './components/pages/home'
 import tags from './admin/pages/tags'
 import category from './admin/pages/category'
+import store from './store/store'
 
 const routes = [
     // authentication routes
     {
         path: '/login',
+        name: 'login',
         component: login
     },
 
     // admin projects routes...
     {
         path: '/',
-        component: home
+        name: 'dashboard',
+        component: home,
+        beforeEnter: (to, from, next) => {
+            if (!store.getters['auth/authenticated']) {
+                return next({
+                    name: 'login'
+                })
+            }
+
+            next()
+        }
     },
     {
         path: '/tags',
-        component: tags
+        name: 'tags',
+        component: tags,
+        beforeEnter: (to, from, next) => {
+            if (!store.getters['auth/authenticated']) {
+                return next({
+                    name: 'login'
+                })
+            }
+
+            next()
+        }
     },
     {
         path: '/categories',
-        component: category
+        name: 'categories',
+        component: category,
+        beforeEnter: (to, from, next) => {
+            if (!store.getters['auth/authenticated']) {
+                return next({
+                    name: 'login'
+                })
+            }
+
+            next()
+        }
     },
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-    // basic tutorial routes...
-    {
-        path: '/my-new-vue-route',
-        component: firstPage
-    },
-    {
-        path: '/new-route',
-        component: newRoutePage
-    },
-
-    // vue hooks
-    {
-        path: '/hooks',
-        component: hooks
-    },
-
-    // more basics
-    {
-        path: '/methods',
-        component: methods
-    }
 ]
 
 export default new Router({
