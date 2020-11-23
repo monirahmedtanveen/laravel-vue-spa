@@ -8,6 +8,8 @@ import methods from './components/pages/basic/methods.vue'
 
 // Authentication Pages
 import login from './admin/authentication/login'
+import signup from './admin/authentication/signup'
+import forgotpassword from './admin/authentication/forgotPassword'
 
 // Project Pages
 import home from './components/pages/home'
@@ -21,6 +23,16 @@ const routes = [
         path: '/login',
         name: 'login',
         component: login
+    },
+    {
+        path: '/signup',
+        name: 'signup',
+        component: signup
+    },
+    {
+        path: '/forgot-password',
+        name: 'forgotpassword',
+        component: forgotpassword
     },
 
     // admin projects routes...

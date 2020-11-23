@@ -15,11 +15,29 @@
         </div>
 
         <div class="space">
-          <Input v-model="data.password" type="password" placeholder="Enter Password" />
+          <Input
+            v-model="data.password"
+            type="password"
+            placeholder="Enter Password"
+          />
         </div>
 
         <div class="login_footer">
-          <Button type="primary" @click="generateOTP" :loading="isLogging">Login</Button>
+          <Button type="primary" @click="generateOTP" :loading="isLogging"
+            >Login</Button
+          >
+        </div>
+
+        <div class="_p20 col-md-12">
+          <div class="footer_account_creation">
+            <router-link to="signup"><Icon type="ios-speedometer" /> Dont Have Account?</router-link>
+          </div>
+
+          <div class="footer_forgot_password">
+            <router-link to="forgot-password"><Icon type="ios-speedometer" /> Forgot Password?</router-link>
+          </div>
+
+          <div class="space"></div>
         </div>
       </div>
       <div
@@ -35,7 +53,9 @@
         </div>
 
         <div class="login_footer">
-          <Button type="primary" @click="loginOtpVerify" :loading="isLogging">Submit</Button>
+          <Button type="primary" @click="loginOtpVerify" :loading="isLogging"
+            >Submit</Button
+          >
         </div>
       </div>
     </div>
@@ -43,7 +63,7 @@
 </template>
 
 <script>
-import { mapActions } from 'vuex'
+import { mapActions } from "vuex";
 
 export default {
   data() {
@@ -59,29 +79,29 @@ export default {
   },
   methods: {
     ...mapActions({
-      signIn: 'auth/signIn'
+      signIn: "auth/signIn",
     }),
 
     async generateOTP() {
-      this.isLogging = true
+      this.isLogging = true;
       if (this.data.email.trim() == "") {
-        this.isLogging = false
+        this.isLogging = false;
         return this.e("Email is required.");
       }
       if (this.data.password.trim() == "") {
-        this.isLogging = false
+        this.isLogging = false;
         return this.e("Password is required.");
       }
-      
+
       const res = await this.callApi("post", "login/otp-generate", this.data);
       if (res.status === 200 && res.data.code === 200) {
-        this.loginPanel = false
+        this.loginPanel = false;
         if (res.data.messages) {
           for (const key in res.data.messages) {
             this.s(res.data.messages[key]);
           }
         } else {
-          this.s("Login OTP is sent to your email.")
+          this.s("Login OTP is sent to your email.");
         }
       } else {
         if (res.data.messages) {
@@ -89,39 +109,39 @@ export default {
             this.e(res.data.messages[key]);
           }
         } else {
-          this.swr()
+          this.swr();
         }
       }
-      this.isLogging = false
+      this.isLogging = false;
     },
 
     async loginOtpVerify() {
-      this.isLogging = true
-      if (this.data.otp.trim() == '') {
-        this.isLogging = false
-        return this.e("OTP is required.")
+      this.isLogging = true;
+      if (this.data.otp.trim() == "") {
+        this.isLogging = false;
+        return this.e("OTP is required.");
       }
 
-      const res = await this.callApi("post", "login/otp-verify", this.data)
+      const res = await this.callApi("post", "login/otp-verify", this.data);
       if (res.status === 200 && res.data.code === 200) {
         /** VUEX SIGNIN FUNCTION FOR STORING TOKEN & USER */
         this.signIn(res.data.data).then(() => {
           this.$router.replace({
-            name: 'dashboard'
-          })
-        })
+            name: "dashboard",
+          });
+        });
       } else {
         if (res.data.messages) {
           for (const key in res.data.messages) {
             this.e(res.data.messages[key]);
           }
         } else {
-          this.swr()
+          this.swr();
         }
       }
 
-      this.isLogging = false
-    }
+      this.isLogging = false;
+    },
   },
 };
 </script>
@@ -137,5 +157,17 @@ export default {
 }
 .login_footer {
   text-align: center;
+}
+.account_footer{
+  margin-top: 10px;
+  bottom: 15px;
+}
+.footer_account_creation {
+  float: left;
+  text-align: left;
+}
+.footer_forgot_password {
+  float: right;
+  text-align: right;
 }
 </style>

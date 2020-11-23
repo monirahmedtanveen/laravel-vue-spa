@@ -23,7 +23,7 @@
                   ><Icon type="ios-speedometer" /> Dashboard</router-link
                 >
               </li>
-              <li>
+              <!-- <li>
                 <router-link to="tags"
                   ><Icon type="ios-speedometer" /> Tags</router-link
                 >
@@ -32,7 +32,7 @@
                 <router-link to="categories"
                   ><Icon type="ios-speedometer" /> Category</router-link
                 >
-              </li>
+              </li> -->
               <li>
                 <a href="#" @click.prevent="signOut"><Icon type="ios-speedometer" /> Logout</a>
               </li>
